@@ -1,0 +1,35 @@
+{
+  "randomSeed": "zX0^bS5|vP0@xO4+sF3[pX8,fG2^rT9?",
+  "fla": {
+    "enable": true
+  },
+  "cff": {
+    "enable": true
+  },
+  "indbr": {
+    "enable": true,
+    "level": 3
+  },
+  "cse": {
+    "enable": false
+  },
+  "cie": {
+    "enable": true,
+    "level": 3
+  },
+  "cfe": {
+    "enable": true,
+    "level": 3
+  },
+  "icall": {
+    "enable": true,
+    "level": 3
+  },
+  "indgv": {
+    "enable": true,
+    "level": 3
+  },
+  "rtti": {
+    "enable": true
+  }
+}
