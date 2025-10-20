@@ -1,7 +1,11 @@
 #include <jni.h>
 #include <string>
+#include <dlfcn.h>
+#include <link.h>
 #include <android/log.h>
+#include <android/dlext.h>
 #include "shadowhook.h"
+
 
 #define LOG_TAG "HOOK1"
 #define HOOKNAME "TESTGAME1: "

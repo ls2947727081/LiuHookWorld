@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(MyHook)
-add_library(myhook SHARED myhook.cpp)
+add_library(myhook SHARED
+        myhook.cpp
+        myhook_onload.cpp
+)
 
 
 

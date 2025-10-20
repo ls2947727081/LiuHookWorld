@@ -6,14 +6,65 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/sample_text"
+    <!-- 顶部居中的输入框 -->
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/hnit_text_1"
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:hint="输入"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="120dp" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/hnit_text_2"
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:hint="请输入包名"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintTop_toBottomOf="@id/hnit_text_1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
+
+    <!-- 输入框下方按钮 -->
+    <Button
+        android:id="@+id/hint_button_one"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="开始分析"
+        app:layout_constraintTop_toBottomOf="@id/hnit_text_2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
+
+    <!-- 日志输出框 -->
+    <ScrollView
+        android:id="@+id/log_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#111111"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/hint_button_one"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:id="@+id/log_output"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#00FF00"
+            android:textSize="12sp"
+            android:lineSpacingExtra="4dp"
+            android:text="日志输出：\n" />
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
