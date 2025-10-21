@@ -203,9 +203,7 @@ bool DumpIl2CppAssemblyInfo(Il2CppAssembly** assemblies, size_t assemblyCount, I
             continue;
         }
         const char* imageName = image->name;
-        write_dump_log("// =========================================================");
         write_dump_log("// DLL: %s", imageName);
-        write_dump_log("// =========================================================");
 
         // 绘制 Class 列表
         DumpClassesInImage(image, funcs);
@@ -314,7 +312,7 @@ SK_HOOK_FUNC("linker64",
 
 // 你自己的函数里调用注册
 static jboolean nativeHookTestGamecpp() {
-    LOGE("123132");
+    LOGE("START Unity Dumper!!!");
     hook_do_open_register();
     return 1;
 }
@@ -334,9 +332,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         }
 
         // 直接调用 hook
-        if (!nativeHookTestGamecpp()) {
-            return JNI_ERR;
-        }
+        nativeHookTestGamecpp();
     }
 
     return JNI_VERSION_1_6;
@@ -376,38 +372,49 @@ Il2CppAssembly** GetIl2CppAssemblies(void *domain, size_t *assemblyCount, Il2Cpp
     return funcs.il2cpp_domain_get_assemblies_fn(domain, assemblyCount);
 }
 
-// Class 修饰符构建
-std::string ClassBuildFlags(uint32_t flags) {
+// ===============================
+//  Class 修饰符解析工具函数
+//  适配 IL2CPP 宏定义 (TYPE_ATTRIBUTE_*)
+// ===============================
+std::string ClassBuildFlags(uint32_t flags)
+{
     std::string modifiers;
-    // 提取访问修饰符
-    auto access_flags = static_cast<TypeAttributeFlags>(flags & static_cast<uint32_t>(TypeAttributeFlags::VisibilityMask));
-    switch (access_flags) {
-        case TypeAttributeFlags::Public:            modifiers += "public"; break;
-        case TypeAttributeFlags::NestedPublic:      modifiers += "public"; break;
-        case TypeAttributeFlags::NestedPrivate:     modifiers += "private"; break;
-        case TypeAttributeFlags::NestedFamily:      modifiers += "protected"; break;
-        case TypeAttributeFlags::NestedAssembly:    modifiers += "internal"; break;
-        case TypeAttributeFlags::NestedFamOrAssem:  modifiers += "protected internal"; break;
-        default: break; // NotPublic，可能是模块级别类型或元数据未解析清晰
+
+    // --- 访问修饰符 ---
+    switch (flags & TYPE_ATTRIBUTE_VISIBILITY_MASK) {
+        case TYPE_ATTRIBUTE_PUBLIC:               modifiers += "public"; break;
+        case TYPE_ATTRIBUTE_NESTED_PUBLIC:        modifiers += "public"; break;
+        case TYPE_ATTRIBUTE_NESTED_PRIVATE:       modifiers += "private"; break;
+        case TYPE_ATTRIBUTE_NESTED_FAMILY:        modifiers += "protected"; break;
+        case TYPE_ATTRIBUTE_NESTED_ASSEMBLY:      modifiers += "internal"; break;
+        case TYPE_ATTRIBUTE_NESTED_FAM_OR_ASSEM:  modifiers += "protected internal"; break;
+        default: break; // TYPE_ATTRIBUTE_NOT_PUBLIC 或未知情况
     }
-    // 统一添加额外修饰符
+
+    // --- 辅助添加修饰符 ---
     auto append_modifier = [&](const char* mod) {
         if (!modifiers.empty()) modifiers += " ";
         modifiers += mod;
     };
-    // C# static class = abstract + sealed
-    bool is_abstract = (flags & static_cast<uint32_t>(TypeAttributeFlags::Abstract)) != 0;
-    bool is_sealed   = (flags & static_cast<uint32_t>(TypeAttributeFlags::Sealed)) != 0;
+
+    // --- 抽象 / 密封 / 静态 ---
+    bool is_abstract = (flags & TYPE_ATTRIBUTE_ABSTRACT) != 0;
+    bool is_sealed   = (flags & TYPE_ATTRIBUTE_SEALED)   != 0;
 
     if (is_abstract && is_sealed) {
-        append_modifier("static"); // C# 中没有 abstract sealed class 的概念，统称为 static
+        append_modifier("static"); // static class (abstract + sealed)
     } else {
         if (is_abstract) append_modifier("abstract");
-        if (is_sealed) append_modifier("sealed");
+        if (is_sealed)   append_modifier("sealed");
     }
+
+    // --- 接口类型 ---
+    if (flags & TYPE_ATTRIBUTE_INTERFACE)
+        append_modifier("interface");
 
     return modifiers.empty() ? "" : modifiers + " ";
 }
+
 
 
 // 获取类型（class/interface/enum）

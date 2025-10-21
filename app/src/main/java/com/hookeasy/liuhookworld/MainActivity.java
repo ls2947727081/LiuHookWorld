@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     // Used to load the 'liuhookworld' library on application startup.
     static {
         System.loadLibrary("myhook");
+        System.loadLibrary("UnityDumper");
     }
     //本地方法
     public native String stringFromJNI();

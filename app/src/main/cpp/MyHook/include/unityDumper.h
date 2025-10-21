@@ -20,6 +20,7 @@
 #include <elf.h>
 #include <algorithm>
 #include "il2cpp-object-internals.h"
+#include "il2cpp-tabledefs.h"
 
 #define LOG_TAG "HOOK1"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -37,6 +38,8 @@ char* apkname = nullptr;
 FILE* g_dump_fp = nullptr;
 // il2cpp_init hook 标志，确保只 hook 一次
 bool il2cpp_hook_flag = false;
+//il2api集成
+struct Il2CppFunctions;
 
 
 // --- 注册方法 ---
@@ -45,6 +48,8 @@ void NameToApkName(const char* name);
 uintptr_t get_base(const char* basename);
 
 void DumpIl2CppClassesOnce(void* il2cpp_handle);
+
+bool initialize_il2cpp_functions(void* libHandle, Il2CppFunctions& funcs);
 
 // --- IL2CPP Function Pointer Typedefs ---
 typedef void* (*il2cpp_domain_get_t)();
@@ -102,64 +107,6 @@ struct Il2CppFunctions {
     il2cpp_type_get_class_t il2cpp_type_get_class_fn = nullptr;
     il2cpp_type_get_type_t il2cpp_type_get_type_fn = nullptr;
     il2cpp_class_is_enum_t il2cpp_class_is_enum_fn = nullptr;
-};
-
-
-enum class TypeAttributeFlags : uint32_t {
-    // 访问修饰符（Visibility）
-    NotPublic           = 0x00000000,
-    Public              = 0x00000001,
-    NestedPublic        = 0x00000002,
-    NestedPrivate       = 0x00000003,
-    NestedFamily        = 0x00000004,
-    NestedAssembly      = 0x00000005,
-    NestedFamAndAssem   = 0x00000006,
-    NestedFamOrAssem    = 0x00000007,
-    VisibilityMask      = 0x00000007,
-
-    // 特性（Modifiers）
-    Interface           = 0x00000020,
-    Abstract            = 0x00000080,
-    Sealed              = 0x00000100,
-};
-
-
-enum FieldAttributeFlags {
-    // 访问修饰符
-    FIELD_ATTRIBUTE_PRIVATE                 = 0x0001,
-    FIELD_ATTRIBUTE_FAM_AND_ASSEM           = 0x0002, // protected internal
-    FIELD_ATTRIBUTE_ASSEMBLY                = 0x0003, // internal
-    FIELD_ATTRIBUTE_FAMILY                  = 0x0004, // protected
-    FIELD_ATTRIBUTE_FAM_OR_ASSEM            = 0x0005, // protected internal
-    FIELD_ATTRIBUTE_PUBLIC                  = 0x0006,
-    FIELD_ATTRIBUTE_FIELD_ACCESS_MASK       = 0x0007,
-
-    // 修饰符
-    FIELD_ATTRIBUTE_STATIC                  = 0x0010,
-    FIELD_ATTRIBUTE_INIT_ONLY               = 0x0020, // readonly
-    FIELD_ATTRIBUTE_LITERAL                 = 0x0040, // const
-    FIELD_ATTRIBUTE_NOT_SERIALIZED          = 0x0080, // [NonSerialized]
-};
-
-
-enum MethodAttributeFlags {
-    // 访问修饰符 (Access flags)
-    METHOD_ATTRIBUTE_PRIVATE             = 0x0001,
-    METHOD_ATTRIBUTE_FAM_AND_ASSEM       = 0x0002, // protected internal
-    METHOD_ATTRIBUTE_ASSEM               = 0x0003, // internal
-    METHOD_ATTRIBUTE_FAMILY              = 0x0004, // protected
-    METHOD_ATTRIBUTE_FAM_OR_ASSEM        = 0x0005, // protected internal (often semantic equivalent to FAM_AND_ASSEM)
-    METHOD_ATTRIBUTE_PUBLIC              = 0x0006, // public
-    METHOD_ATTRIBUTE_MEMBER_ACCESS_MASK  = 0x0007, // Mask for access flags
-
-    // 方法属性 (Method attributes)
-    METHOD_ATTRIBUTE_STATIC              = 0x0010, // Static method
-    METHOD_ATTRIBUTE_FINAL               = 0x0020, // Cannot be overridden (sealed in C#)
-    METHOD_ATTRIBUTE_VIRTUAL             = 0x0040, // Virtual method
-    METHOD_ATTRIBUTE_NEW_SLOT            = 0x0100, // Occupies a new slot in the vtable (like 'new' keyword)
-
-    // 抽象/特殊方法 (Abstract/Special methods)
-    METHOD_ATTRIBUTE_ABSTRACT            = 0x0400, // Abstract method
 };
 
 // --- 方式1：按符号名解析 ---
@@ -251,8 +198,8 @@ inline const std::unordered_map<std::string, std::string> type_map = {
         {"Object*", "object*"},
         {"Char", "char"},
         {"Char*", "char*"},
-        {"UInt64", "ulong"},
-        {"UInt64*", "ulong*"},
+        {"UInt64", "uint64"},
+        {"UInt64*", "uint64*"},
         {"UInt32", "uint"},
         {"UInt32*", "uint*"},
         {"UInt16", "ushort"},
