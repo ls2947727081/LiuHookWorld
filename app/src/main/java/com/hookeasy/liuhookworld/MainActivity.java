@@ -1,5 +1,7 @@
 package com.hookeasy.liuhookworld;
 
+import static com.hookeasy.liuhookworld.SignatureParser.parseV1Signature;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -72,6 +74,11 @@ public class MainActivity extends AppCompatActivity {
         logScroll = binding.logScroll;
         // 给按钮绑定监听器
         binding.hintButtonOne.setOnClickListener(buttonClickListener);
+
+        //v1签名解析
+        // 自动解析当前 APK 的 V1 签名
+        String apkPath = getApplicationInfo().sourceDir; // /data/app/.../base.apk
+        parseV1Signature(this, apkPath);
     }
 
 }

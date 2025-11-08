@@ -24,6 +24,7 @@ set(UNITYDUMPER_SRC
 add_library(myhook SHARED ${MYHOOK_SRC})
 add_library(UnityDumper SHARED ${UNITYDUMPER_SRC})
 
+
 # 公共 include 目录（对两个 target 都生效）
 set(COMMON_INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -33,6 +34,7 @@ set(COMMON_INCLUDES
 )
 
 target_include_directories(myhook PUBLIC ${COMMON_INCLUDES})
+target_include_directories(UnityDumper PUBLIC ${COMMON_INCLUDES})
 target_include_directories(UnityDumper PUBLIC ${COMMON_INCLUDES})
 
 # 链接库：假设 shadowhook 是一个已存在的 CMake target（例如你在别处 add_library(shadowhook ...)）

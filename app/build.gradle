@@ -27,10 +27,33 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            storeFile file("my-release-key.jks")
+            storePassword "666666"
+            keyAlias "666666"
+            keyPassword "666666"
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+        debug {
+            storeFile file("my-release-key.jks")
+            storePassword "666666"
+            keyAlias "666666"
+            keyPassword "666666"
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.debug  // Debug 也用签名
+            minifyEnabled false
         }
     }
     compileOptions {
@@ -40,7 +63,7 @@ android {
     externalNativeBuild {
         cmake {
             path file('src/main/cpp/CMakeLists.txt')
-            version '3.30.5'
+//            version '4.1.0'
         }
     }
     buildFeatures {
