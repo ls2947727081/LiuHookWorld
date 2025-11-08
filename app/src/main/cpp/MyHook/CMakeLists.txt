@@ -14,9 +14,10 @@ endif()
 # 源文件
 set(MYHOOK_SRC
         ${CMAKE_CURRENT_SOURCE_DIR}/myhook.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils/v1sigparse.cpp
 )
 set(UNITYDUMPER_SRC
-        ${CMAKE_CURRENT_SOURCE_DIR}/UnityDumper.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UnityDumper/UnityDumper.cpp
 )
 
 # 创建两个共享库
